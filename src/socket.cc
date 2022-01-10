@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include <iostream>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/ip.h>
-#include <array>
-#include "socket.h"
-#include <string.h>
-#include <arpa/inet.h>
-#include <cerrno>
-#include <cstring>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "../include/socket.h"
 
 Socket::Socket(const sockaddr_in &address) {
     fd_ = socket(AF_INET, SOCK_DGRAM, 0);
@@ -61,7 +48,7 @@ void Socket::send_to(const Message& message, const sockaddr_in& address) {
     }
 }
 
-int Socket::receive_from(sockaddr_in &address){//, std::string& respuesta)  {
+int Socket::receive_from(sockaddr_in &address, std::string& respuesta){
     // Recibir un mensaje del socket remoto
     //std::cout << message.text.data() << std::endl;sizeof(address)
     socklen_t src_len;
@@ -72,8 +59,8 @@ int Socket::receive_from(sockaddr_in &address){//, std::string& respuesta)  {
     }
 
     std::string s(buffer.text.data(), buffer.size);
-
+    respuesta = s;
     //std::cout << "Se leyeron " << buffer.size << " bytes del mensaje. Resultado:\n" << s << std::endl;
-    std::cout << s;
+    //std::cout << s;
     return buffer.size;
 }

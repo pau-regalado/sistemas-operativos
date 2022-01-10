@@ -1,16 +1,22 @@
-all: emisor receptor file
+INCLUDE=./include/
+SRC=./src/
 
-file: file.h
-	g++ file.cc -c
+all: funciones emisor receptor file 
 
-socket: socket.cc socket.h
-	g++ socket.cc -c
+file: $(INCLUDE)file.h
+	g++ $(SRC)file.cc -c
+
+socket: $(SRC)socket.cc $(INCLUDE)socket.h
+	g++ $(SRC)socket.cc -c
+
+funciones: $(SRC)funciones.cc $(INCLUDE)funciones.h
+	g++ $(SRC)funciones.cc -c
 
 emisor: socket file
-	g++ emisor.cc -o socketemisor socket.o file.o
+	g++ $(SRC)emisor.cc -o socketemisor socket.o file.o funciones.o
 
 receptor: socket
-	g++ receptor.cc -o socketreceptor socket.o file.o
+	g++ $(SRC)receptor.cc -o socketreceptor socket.o file.o funciones.o
 
 clean:
 	rm *.o socketreceptor socketemisor
