@@ -30,6 +30,7 @@ class Socket {
     //void send_to(const std::string& message, const sockaddr_in& address);
     int receive_from(sockaddr_in& address, std::string& respuesta);//, std::string& respuesta);
 
+    int get_fd(void);
 
 private:
     //void create_socket(const sockaddr_in& address);

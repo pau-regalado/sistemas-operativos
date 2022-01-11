@@ -18,6 +18,10 @@ Socket::~Socket(){
     close(fd_);
 }
 
+int Socket::get_fd(void){
+  return fd_;
+}
+
 
 
 sockaddr_in make_ip_address(int port, const std::string &ip_address)
