@@ -1,17 +1,16 @@
 #include "../include/socket.h"
 
 Socket::Socket(const sockaddr_in &address) {
-    fd_ = socket(AF_INET, SOCK_DGRAM, 0);
-    if (fd_ < 0) {
-        throw std::system_error(errno, std::system_category(),
-                                "no se pudo crear el socket");
-    }
+  fd_ = socket(AF_INET, SOCK_DGRAM, 0);
+  if (fd_ < 0) {
+    throw std::system_error(errno, std::system_category(),
+                            "no se pudo crear el socket");
+  }
 
-   
-        int result = bind(fd_, reinterpret_cast<const sockaddr *>(&address), sizeof(address));
-        if (result < 0)  {
-            throw std::system_error(errno, std::system_category()), "No se pudo ejecutar bind";
-        }
+  int result = bind(fd_, reinterpret_cast<const sockaddr *>(&address), sizeof(address));
+  if (result < 0)  {
+    throw std::system_error(errno, std::system_category()), "No se pudo ejecutar bind";
+  }
 }
 
 Socket::~Socket(){
@@ -43,7 +42,7 @@ sockaddr_in make_ip_address(int port, const std::string &ip_address)
     
 }
 
-void Socket::send_to(const Message& message, const sockaddr_in& address) {
+void Socket::send_to(const Message& message, const sockaddr_in& address){
 
     int result = sendto(fd_, &message, sizeof(message), 0, reinterpret_cast<const sockaddr*>(&address), sizeof(address));
     
@@ -52,7 +51,38 @@ void Socket::send_to(const Message& message, const sockaddr_in& address) {
     }
 }
 
+void Socket::send_to(const Message& message, std::string ip_dest, int p_dest){
+
+  //Direccion del receptor
+  sockaddr_in remote_address = make_ip_address(p_dest,ip_dest);
+  
+  int result = sendto(fd_, &message, sizeof(message), 0, 
+    reinterpret_cast<const sockaddr*>(&remote_address), sizeof(remote_address));
+    
+  if (result < 0)   {
+    throw std::system_error(errno, std::system_category(), "Error enviando mensaje");
+  }
+}
+
 int Socket::receive_from(sockaddr_in &address, std::string& respuesta){
+    // Recibir un mensaje del socket remoto
+    //std::cout << message.text.data() << std::endl;sizeof(address)
+    sockaddr_in remote_address{};
+    socklen_t src_len = sizeof(address);
+    Message buffer;
+    int result = recvfrom(fd_, &buffer, sizeof(buffer), 0, reinterpret_cast<sockaddr*>(&address), &src_len); //(socklen_t) sizeof(address));
+    if (result < 0) {
+        throw std::system_error(errno, std::system_category(), "No se recibió el mensaje");
+    }
+
+    std::string s(buffer.text.data(), buffer.size);
+    respuesta = s;
+    //std::cout << "Se leyeron " << buffer.size << " bytes del mensaje. Resultado:\n" << s << std::endl;
+    //std::cout << s;
+    return buffer.size;
+}
+
+int Socket::receive_from(std::string ip_dest, int p_dest, std::string& respuesta){
     // Recibir un mensaje del socket remoto
     //std::cout << message.text.data() << std::endl;sizeof(address)
     socklen_t src_len;

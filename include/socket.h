@@ -27,8 +27,11 @@ class Socket {
     ~Socket();
     
     void send_to(const Message& message, const sockaddr_in& address);
-    //void send_to(const std::string& message, const sockaddr_in& address);
-    int receive_from(sockaddr_in& address, std::string& respuesta);//, std::string& respuesta);
+    void send_to(const Message& message, std::string ip_dest, int p_dest);
+    
+    
+    int receive_from(sockaddr_in& address, std::string& respuesta);
+    int receive_from(std::string ip_dest, int p_dest, std::string& respuesta);
 
     int get_fd(void);
 
